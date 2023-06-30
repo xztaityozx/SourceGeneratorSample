@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Roslyn Component": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\EntryPoint\\EntryPoint.csproj"
+    }
+  }
+}
