@@ -32,19 +32,29 @@ internal class ClassCompiler
             .Select(methodCompiler.Compile)
             .ToArray();
 
+        var properties = classDeclarationSyntax.Members.OfType<PropertyDeclarationSyntax>()
+            .Select(prop => prop.Identifier.ValueText)
+            .ToArray();
+
+        var fieldNameList = classDeclarationSyntax.Members.OfType<FieldDeclarationSyntax>()
+            .SelectMany(field => field.Declaration.Variables)
+            .Select(d => d.Identifier.ValueText);
+
         var constructorCodeLines = new List<string>
         {
             "sub new {",
             "    my ($class, $args) = @_;",
-            // Todo: ここにバリデーションコードを入れる
-            "    my $self = +{",
-            "        %$args",
-            "    };",
+            "    $args //= +{};",
+            "    my @fields = qw(" + string.Join(" ", properties.Concat(fieldNameList)) + ");",
+            "    my $self = +{ %$args };",
+            "    for my $field (@fields) {",
+            "        $self->{$field} //= undef;",
+            "    }",
             "    bless $self, $class;",
             "    return $self;",
             "}",
         };
 
-        return new ClassDeclaration(className, subroutines);
+        return new ClassDeclaration(className, constructorCodeLines ,subroutines);
     }
 }

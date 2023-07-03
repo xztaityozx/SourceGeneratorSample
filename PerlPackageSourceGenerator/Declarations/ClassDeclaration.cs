@@ -6,7 +6,7 @@ internal class ClassDeclaration
 {
     public List<string> Lines { get; }
 
-    public ClassDeclaration(string originalName, IEnumerable<SubRoutineDeclaration> subRoutines)
+    public ClassDeclaration(string originalName, IEnumerable<string> constructorCodes, IEnumerable<SubRoutineDeclaration> subRoutines)
     {
         Lines = new List<string>
         {
@@ -19,6 +19,8 @@ internal class ClassDeclaration
             "use strict;",
             "",
         };
+        
+        Lines.AddRange(constructorCodes);
         Lines.AddRange(subRoutines.SelectMany(subRoutine => subRoutine.Lines));
 
         Lines.Add("1;");
